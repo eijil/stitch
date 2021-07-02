@@ -15,6 +15,9 @@ class Stitch {
     }
     calculateMergeInfors() {
         
+        
+
+
         for (let i = 0; i < this.images.length - 1; i++) {
 
             const topImg = toImageData(this.images[i])
