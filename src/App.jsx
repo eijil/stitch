@@ -55,7 +55,17 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
 
 
+<<<<<<< HEAD
 
+=======
+  useEffect(() => {
+
+    worker.onmessage = (e) => {
+      console.log(e)
+      setIsLoading(false)
+    }
+  }, [])
+>>>>>>> 569acdb63e672c12ca5a2d3e10a3f29ae64d63f0
 
   const handlerChange = async (info) => {
 
