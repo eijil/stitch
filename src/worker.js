@@ -1,3 +1,5 @@
+//todo/ 使用webwoker处理
+
 import Stitch from './stitch'
 
 

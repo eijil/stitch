@@ -55,13 +55,13 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
 
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    worker.onmessage =(e)=>{
+    worker.onmessage = (e) => {
       console.log(e)
       setIsLoading(false)
     }
-  },[])
+  }, [])
 
   const handlerChange = async (info) => {
 
@@ -71,7 +71,7 @@ function App() {
         file.url = await getBase64(file.originFileObj)
       }
     }
-    setFileList(_.sortBy(fileList,['name']))
+    setFileList(_.sortBy(fileList, ['name']))
   }
 
   const handlerStitch = async () => {
