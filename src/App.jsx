@@ -4,9 +4,9 @@ import { CloudUploadOutlined, DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash'
 import Stitch from './stitch'
 
-
-import MyWorker from './worker?worker'
-const worker = new MyWorker()
+// TODO
+// import MyWorker from './worker?worker'
+// const worker = new MyWorker()
 
 
 
@@ -55,13 +55,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
 
 
-  useEffect(()=>{
 
-    worker.onmessage =(e)=>{
-      console.log(e)
-      setIsLoading(false)
-    }
-  },[])
 
   const handlerChange = async (info) => {
 
@@ -71,13 +65,13 @@ function App() {
         file.url = await getBase64(file.originFileObj)
       }
     }
-    setFileList(_.sortBy(fileList,['name']))
+    setFileList(_.sortBy(fileList, ['name']))
   }
 
   const handlerStitch = async () => {
 
     setIsLoading(true)
-    worker.postMessage(fileList);
+   
 
     const imgs = await createImage()
     const stich = new Stitch([...imgs])
