@@ -1,8 +1,8 @@
 
 import { toLineSumPixel } from './imageUtils'
 
-const MIN_OVERLAP_HEIGHT = 50
-const MIN_LOWER_BOUND = 0.99
+const MIN_OVERLAP_HEIGHT = 100
+const MIN_LOWER_BOUND = 0.98
 
 class StitchImage {
 
@@ -62,7 +62,7 @@ class StitchImage {
 
             //init matrix
             const matrix = [[], []]
-            for (let i = 0; i < botImgHeight.length; i++) {
+            for (let i = 0; i < botImgHeight; i++) {
                 matrix[0][i] = matrix[1][i] = 0;
             }
             //动态规划
@@ -179,7 +179,7 @@ class StitchImage {
             }
 
             if (infor.distance > 100) {
-                this.isValidOverlapInfors = true;
+                this.isValidOverlapInfos = true;
                 validOverlapAreas.push(infor)
 
             }
