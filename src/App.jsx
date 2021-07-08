@@ -74,7 +74,7 @@ function App() {
 
     const imgs = await createImage()
     const stich = new Stitch([...imgs])
-    console.log('s', stich)
+   
     const canvas = document.createElement('canvas')
     canvas.width = stich.result.width
     canvas.height = stich.result.height
@@ -137,7 +137,7 @@ function App() {
             <Image.PreviewGroup>
               {
                 fileList.map((file) => {
-                  console.log(file)
+                
                   return (
                     <Image
                       key={file.uid}

@@ -1,8 +1,8 @@
 
 import { toLineSumPixel } from './imageUtils'
 
-const MIN_OVERLAP_HEIGHT = 100
-const MIN_LOWER_BOUND = 0.98
+const MIN_OVERLAP_HEIGHT = 200 //最少重叠高度
+const MIN_LOWER_BOUND = 0.99   //像素的相似度
 
 class StitchImage {
 
@@ -36,18 +36,19 @@ class StitchImage {
      * 查找所有重叠区域
      */
     findAllOverlapAreas() {
-        while (!this.isValidOverlapInfos && this.lowerBound >= MIN_LOWER_BOUND && !this.isSameImage) {
+        while (!this.isValidOverlapInfos && this.lowerBound >= MIN_LOWER_BOUND && !this.isSameImage ) {
 
             console.log(`Stitching with lowerBound: ${this.lowerBound}, upperBound:${this.upperBound}`)
 
             // find overlaps:
             this.calcultateOverlap()
-
+            
             // reduce bounds:
             this.lowerBound -= 0.01;
             this.upperBound += 0.01;
 
             this.verifyDetectedOverlapAreas()
+            console.log(this.overlapAreas)
         }
 
 
@@ -69,6 +70,7 @@ class StitchImage {
             for (let i = 0; i < topImgHeight; i++) {
                 let topLineValue = topLines[i];
                 for (let j = 0; j < botImgHeight; j++) {
+                
                     let botLineValue = botLines[j]
                     // if row i (TopImage) ~ row j (BotImage)
                     if (this.isApproximateTo(topLineValue, botLineValue)) {
@@ -83,10 +85,12 @@ class StitchImage {
                         // if DetectedOverlap > MIN_OVERLAP_HEIGHT, then Update array OverlapAreas.
                         if (currentOverlapHeight > MIN_OVERLAP_HEIGHT) {
 
+                           
                             const infor = {}
                             infor.overlapHeight = currentOverlapHeight;
                             infor.beginOverlapTopImage = i - currentOverlapHeight + 1;
                             infor.beginOverlapBotImage = j - currentOverlapHeight + 1;
+                            infor.distance = infor.beginOverlapTopImage - infor.beginOverlapBotImage
 
                             this.addToListInfor(infor)
 
@@ -102,6 +106,8 @@ class StitchImage {
 
     selectBestOverlapArea() {
 
+        let max = 0
+
         // for each OverlapArea:
         for (const infor of this.overlapAreas) {
 
@@ -112,6 +118,7 @@ class StitchImage {
                 this.beginOverlapBotImageRow = infor.beginOverlapBotImage;
                 break;
 
+         
                 // case 2: select the max distance overlap infor:
             } else if (infor.distance > this.currentDistance()) {
 
@@ -119,7 +126,20 @@ class StitchImage {
                 this.beginOverlapTopImageRow = infor.beginOverlapTopImage;
                 this.beginOverlapBotImageRow = infor.beginOverlapBotImage;
             }
+            
+
+            //找重叠距离最长的？
+            
+            // if (infor.beginOverlapTopImage - infor.beginOverlapBotImage > max){
+            //     this.overlapLength = infor.overlapHeight;
+            //     this.beginOverlapTopImageRow = infor.beginOverlapTopImage;
+            //     this.beginOverlapBotImageRow = infor.beginOverlapBotImage;
+            //     max = infor.beginOverlapTopImage - infor.beginOverlapBotImage
+            // }
+
         }
+
+      
 
 
     }
@@ -169,8 +189,9 @@ class StitchImage {
     verifyDetectedOverlapAreas() {
 
         const validOverlapAreas = []
-
+        
         for (const infor of this.overlapAreas) {
+         
             // if is the same image:
             if (infor.distance === 0 && infor.overlapHeight > 0.99 * this.topImage.height) {
                 this.isSameImage = true;
