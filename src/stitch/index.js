@@ -6,6 +6,7 @@ class Stitch {
     constructor(images) {
         this.images = images
         this.result = null
+        
         this.init()
     }
     init() {
@@ -15,16 +16,15 @@ class Stitch {
     }
     calculateMergeInfors() {
         
-        
-
-
         for (let i = 0; i < this.images.length - 1; i++) {
 
             const topImg = toImageData(this.images[i])
             const botImg = toImageData(this.images[i+1])
             const stitchImage = new StitchImage(topImg, botImg)
             stitchImage.findBestOverlapAreas()
+            
             this.listMergeInfors.push(stitchImage)
+           
             console.log('stitchImage', stitchImage)
         }
     }
@@ -62,7 +62,7 @@ class Stitch {
 
         //截掉重叠部分
         const cropBotImage = cropImageData(botImage, { top: beginOverlapBotImageRow })
-
+       
         const canvas = document.createElement("canvas")
         const ctx = canvas.getContext('2d');
         canvas.width = topImage.width
@@ -70,8 +70,7 @@ class Stitch {
         ctx.putImageData(topImage, 0, 0)
         ctx.putImageData(cropBotImage, 0, beginOverlapTopImageRow)
         const imageData = ctx.getImageData(0, 0, topImage.width, resultHeight)
-
-
+       
         return imageData
     }
 

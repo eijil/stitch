@@ -1,7 +1,7 @@
 
 import { toLineSumPixel } from './imageUtils'
 
-const MIN_OVERLAP_HEIGHT = 200 //最少重叠高度
+const MIN_OVERLAP_HEIGHT = 80 //最少重叠高度
 const MIN_LOWER_BOUND = 0.99   //像素的相似度
 
 class StitchImage {
@@ -11,6 +11,7 @@ class StitchImage {
 
         this.topImage = topImage
         this.botImage = botImage
+       
 
         this.lowerBound = 1.0;
         this.upperBound = 1.0;
@@ -23,7 +24,7 @@ class StitchImage {
         this.beginOverlapTopImageRow = 0;
         this.beginOverlapBotImageRow = 0;
         this.overlapLength = 0
-
+        
     }
     findBestOverlapAreas() {
 
@@ -39,7 +40,7 @@ class StitchImage {
         while (!this.isValidOverlapInfos && this.lowerBound >= MIN_LOWER_BOUND && !this.isSameImage ) {
 
             console.log(`Stitching with lowerBound: ${this.lowerBound}, upperBound:${this.upperBound}`)
-
+            
             // find overlaps:
             this.calcultateOverlap()
             
@@ -49,6 +50,7 @@ class StitchImage {
 
             this.verifyDetectedOverlapAreas()
             console.log(this.overlapAreas)
+            
         }
 
 
@@ -66,8 +68,18 @@ class StitchImage {
             for (let i = 0; i < botImgHeight; i++) {
                 matrix[0][i] = matrix[1][i] = 0;
             }
-            //动态规划
+            
             for (let i = 0; i < topImgHeight; i++) {
+
+                //加一个判断，如果1/5高度，重叠已经超过60%则仍未有问题退出不合并
+                if(i > topImgHeight / 5){
+                    
+                    if(i * 0.6 <=this.overlapAreas.length){
+                        console.log('much overlap')
+                        break;
+                    }
+                }
+
                 let topLineValue = topLines[i];
                 for (let j = 0; j < botImgHeight; j++) {
                 
@@ -83,16 +95,21 @@ class StitchImage {
                         // Update OverlapLength at Row i, Col j.
                         matrix[i % 2][j] = currentOverlapHeight;
                         // if DetectedOverlap > MIN_OVERLAP_HEIGHT, then Update array OverlapAreas.
-                        if (currentOverlapHeight > MIN_OVERLAP_HEIGHT) {
+                        if (currentOverlapHeight > MIN_OVERLAP_HEIGHT  ) {
 
-                           
+                       
                             const infor = {}
                             infor.overlapHeight = currentOverlapHeight;
                             infor.beginOverlapTopImage = i - currentOverlapHeight + 1;
                             infor.beginOverlapBotImage = j - currentOverlapHeight + 1;
                             infor.distance = infor.beginOverlapTopImage - infor.beginOverlapBotImage
-
-                            this.addToListInfor(infor)
+                          
+                            
+                            if (infor.distance > 10){
+                               this.addToListInfor(infor)
+                                
+                            }
+                            
 
                         }
                     } else {
@@ -106,37 +123,21 @@ class StitchImage {
 
     selectBestOverlapArea() {
 
-        let max = 0
+       
 
-        // for each OverlapArea:
+       
         for (const infor of this.overlapAreas) {
 
-            // case 1: in the mid has the big overlap:
-            if (infor.overlapHeight > this.sufficientOverlapHeight()) {
+      
+            if (infor.overlapHeight > this.overlapLength ) {
+
                 this.overlapLength = infor.overlapHeight;
                 this.beginOverlapTopImageRow = infor.beginOverlapTopImage;
                 this.beginOverlapBotImageRow = infor.beginOverlapBotImage;
-                break;
 
+            } 
+            
          
-                // case 2: select the max distance overlap infor:
-            } else if (infor.distance > this.currentDistance()) {
-
-                this.overlapLength = infor.overlapHeight;
-                this.beginOverlapTopImageRow = infor.beginOverlapTopImage;
-                this.beginOverlapBotImageRow = infor.beginOverlapBotImage;
-            }
-            
-
-            //找重叠距离最长的？
-            
-            // if (infor.beginOverlapTopImage - infor.beginOverlapBotImage > max){
-            //     this.overlapLength = infor.overlapHeight;
-            //     this.beginOverlapTopImageRow = infor.beginOverlapTopImage;
-            //     this.beginOverlapBotImageRow = infor.beginOverlapBotImage;
-            //     max = infor.beginOverlapTopImage - infor.beginOverlapBotImage
-            // }
-
         }
 
       
@@ -161,7 +162,7 @@ class StitchImage {
         let isExisted = false;
 
         for (const infor of this.overlapAreas) {
-
+          
             if ((this.isApproximateIndex(inputInfor.beginOverlapBotImage, infor.beginOverlapBotImage) ||
                 this.isApproximateIndex(inputInfor.beginOverlapTopImage, infor.beginOverlapTopImage)) &&
                 this.isApproximateIndex(inputInfor.overlapHeight, infor.overlapHeight)) {
@@ -183,7 +184,9 @@ class StitchImage {
 
 
         if (!isExisted) {
+            
             this.overlapAreas.push(inputInfor)
+            
         }
     }
     verifyDetectedOverlapAreas() {
