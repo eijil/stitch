@@ -1,8 +1,8 @@
 
 import { toLineSumPixel } from './imageUtils'
 
-const MIN_OVERLAP_HEIGHT = 80 //最少重叠高度
-const MIN_LOWER_BOUND = 0.99   //像素的相似度
+const MIN_OVERLAP_HEIGHT = 50 //最少重叠高度
+const MIN_LOWER_BOUND = 0.98   //像素的相似度
 
 class StitchImage {
 
@@ -27,11 +27,9 @@ class StitchImage {
         
     }
     findBestOverlapAreas() {
-
         this.findAllOverlapAreas()
         this.selectBestOverlapArea()
-        this.checkOrderedOfImages()
-
+       // this.checkOrderedOfImages()
     }
     /**
      * 查找所有重叠区域
@@ -63,6 +61,7 @@ class StitchImage {
             const topImgHeight = topLines.length;
             const botImgHeight = botLines.length;
 
+            
             //init matrix
             const matrix = [[], []]
             for (let i = 0; i < botImgHeight; i++) {
@@ -102,14 +101,9 @@ class StitchImage {
                             infor.overlapHeight = currentOverlapHeight;
                             infor.beginOverlapTopImage = i - currentOverlapHeight + 1;
                             infor.beginOverlapBotImage = j - currentOverlapHeight + 1;
-                            infor.distance = infor.beginOverlapTopImage - infor.beginOverlapBotImage
-                          
-                            
-                            if (infor.distance > 10){
-                               this.addToListInfor(infor)
-                                
-                            }
-                            
+                           
+                            this.addToListInfor(infor)
+ 
 
                         }
                     } else {
@@ -194,20 +188,22 @@ class StitchImage {
         const validOverlapAreas = []
         
         for (const infor of this.overlapAreas) {
-         
+            let distance = infor.beginOverlapTopImage - infor.beginOverlapBotImage
             // if is the same image:
-            if (infor.distance === 0 && infor.overlapHeight > 0.99 * this.topImage.height) {
+            if (distance === 0 && infor.overlapHeight > 0.99 * this.topImage.height ) {
+                console.log('same')
                 this.isSameImage = true;
                 validOverlapAreas.push(infor)
                 break;
             }
 
-            if (infor.distance > 100) {
+            if (distance > 100) {
                 this.isValidOverlapInfos = true;
                 validOverlapAreas.push(infor)
 
             }
         }
+        this.overlapAreas = validOverlapAreas
     }
 
     isApproximateTo(x, y) {

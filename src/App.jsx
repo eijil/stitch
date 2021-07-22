@@ -124,13 +124,15 @@ function App() {
    
     console.time('stitch')
     const imgs = await createImage()
-    const stich = new Stitch([...imgs])
+    const stich = new Stitch([...imgs],true)
    
     const canvas = document.createElement('canvas')
-    canvas.width = stich.result.width
+    canvas.width = stich.result.width 
     canvas.height = stich.result.height
     const ctx = canvas.getContext('2d')
+   
     ctx.putImageData(stich.result, 0, 0)
+    
     setResult(canvas.toDataURL('image/jpeg'))
     console.timeEnd('stitch')
     setIsLoading(false)
