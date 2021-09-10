@@ -29,7 +29,7 @@ class StitchImage {
     findBestOverlapAreas() {
         this.findAllOverlapAreas()
         this.selectBestOverlapArea()
-       // this.checkOrderedOfImages()
+        this.checkOrderedOfImages()
     }
     /**
      * 查找所有重叠区域
@@ -61,7 +61,8 @@ class StitchImage {
             const topImgHeight = topLines.length;
             const botImgHeight = botLines.length;
 
-            
+           
+
             //init matrix
             const matrix = [[], []]
             for (let i = 0; i < botImgHeight; i++) {
@@ -70,11 +71,15 @@ class StitchImage {
             
             for (let i = 0; i < topImgHeight; i++) {
 
+
+                
+
                 //加一个判断，如果1/5高度，重叠已经超过60%则仍未有问题退出不合并
                 if(i > topImgHeight / 5){
                     
                     if(i * 0.6 <=this.overlapAreas.length){
                         console.log('much overlap')
+                        //isVaild = false
                         break;
                     }
                 }
@@ -189,20 +194,23 @@ class StitchImage {
         
         for (const infor of this.overlapAreas) {
             let distance = infor.beginOverlapTopImage - infor.beginOverlapBotImage
+           
             // if is the same image:
-            if (distance === 0 && infor.overlapHeight > 0.99 * this.topImage.height ) {
+            if (distance === 0 && infor.overlapHeight > 0.98 * this.topImage.height ) {
                 console.log('same')
                 this.isSameImage = true;
                 validOverlapAreas.push(infor)
                 break;
             }
-
-            if (distance > 100) {
+           
+            if (distance > 20) {
+               
                 this.isValidOverlapInfos = true;
                 validOverlapAreas.push(infor)
 
             }
         }
+        
         this.overlapAreas = validOverlapAreas
     }
 

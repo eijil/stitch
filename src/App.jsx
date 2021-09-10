@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Layout, PageHeader, Image, Row, Col, Button, Upload, Space, Divider } from 'antd';
 import { CloudUploadOutlined, DeleteOutlined } from '@ant-design/icons';
+
 import _ from 'lodash'
 import img0 from './image/0.jpg'
 import img1 from './image/1.jpg'
@@ -126,6 +127,8 @@ function App() {
     const imgs = await createImage()
     const stich = new Stitch([...imgs],true)
    
+   
+
     const canvas = document.createElement('canvas')
     canvas.width = stich.result.width 
     canvas.height = stich.result.height

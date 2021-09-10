@@ -3,35 +3,43 @@ import StitchImage from './stitchImage.js';
 import  cropImageData  from 'crop-image-data'
 import { toImageData } from './imageUtils'
 class Stitch {
-    constructor(images,scale=false) {
+    constructor(images) {
         this.images = images
         this.result = null
-        this.scale = scale
         this.init()
     }
     init() {
         this.listMergeInfors = []
         this.calculateMergeInfors()
         this.stitch()
+       
     }
+   
     calculateMergeInfors() {
         
         for (let i = 0; i < this.images.length - 1; i++) {
-
-            const topImg = toImageData(this.images[i], this.scale)
-            const botImg = toImageData(this.images[i + 1], this.scale)
+            const topImg = toImageData(this.images[i],true)
+            const botImg = toImageData(this.images[i + 1], true)
             let stitchImage = new StitchImage(topImg, botImg)
             stitchImage.findBestOverlapAreas()
-            if (!stitchImage.isSameImage){
-                this.listMergeInfors.push(stitchImage)
-            }
             console.log('stitchImage', stitchImage)
+            if (stitchImage.beginOverlapTopImageRow === stitchImage.beginOverlapBotImageRow){
+                if(i===0){
+                    stitchImage.botImage = stitchImage.topImage
+                    this.listMergeInfors.push(stitchImage)
+                }
+                break;
+            }
+            this.listMergeInfors.push(stitchImage)
         }
+        
+
     }
     stitch() {
 
         let result;
-       
+        
+
         for (let i = 0; i < this.listMergeInfors.length; i++) {
             if (i !== 0) {
                 this.listMergeInfors[i].beginOverlapTopImageRow =
@@ -44,6 +52,8 @@ class Stitch {
                 result = this.generateImage(this.listMergeInfors[i]);
             }
         }
+      
+
         this.result = result
     }
     generateImage(stitchInfo) {
